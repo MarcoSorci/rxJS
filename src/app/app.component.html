@@ -1,9 +1,12 @@
-<h1>App Component</h1>
+<h1>River Data</h1>
 
-<div *ngFor="let seaData of seaDataArray">
-  <p>{{seaData}}</p>
-</div>
+<ul>
+  <li *ngFor="let waterData of waterDataArray">
+    {{waterData.date}} -- {{waterData.value}} --
+    <img src="./assets/images/{{waterData.icon}}.svg" alt="">
+  </li>
+</ul>
 
-<button (click)="incrementCounter()">Increment</button>
+<!-- <button (click)="incrementCounter()">Increment</button> -->
 
 <router-outlet></router-outlet>
