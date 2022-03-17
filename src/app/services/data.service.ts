@@ -54,38 +54,51 @@ export class DataService {
 
   getApiData(): Observable<WaterData[]> {
     return this.http
-      .get(this.apiUrl, { responseType: 'text' })
-      .pipe(map(this.parseCSV), map(this.addIcon));
+      .get(this.apiUrl, { responseType: 'text' }) //the stuff in {} is the httpOptions
+      .pipe(
+        map(this.parseCSV),
+        map((data) => this.addIcon(data)),
+        map(data=>data.sort((d1, d2)=> d1.date.getTime() - d2.date.getTime()))
+      );
   }
 
   parseCSV(csv: string) {
     const tempArray = [];
     const splittedCsv = csv.split(/\r?\n/);
     for (const elem of splittedCsv) {
-      const newLine = elem.split(',');
-      const data: WaterData = {
-        date: new Date(newLine[0]),
-        value: parseFloat(newLine[1]),
-      };
-      tempArray.push(data);
+      if (elem) {
+        const newLine = elem.split(',');
+        const data: WaterData = {
+          date: new Date(newLine[0]),
+          value: parseFloat(newLine[1]),
+        };
+        tempArray.push(data);
+      }
     }
     return tempArray;
   }
 
-  addIcon(arr: WaterData[]): WaterData[] {
+  calculateMedian(arr: WaterData[]): number {
+    let result = 0;
+    let median = 0;
     for (let i = 0; i < arr.length; i++) {
-      if (i === 0) {
-        arr[i].icon = 'start';
+      const elem = arr[i];
+      result += elem.value;
+    }
+    median = result / arr.length;
+    return parseFloat(median.toFixed(1))
+  }
+  public median: number = 0;
+
+  addIcon(arr: WaterData[]): WaterData[] {
+    this.median = this.calculateMedian(arr);
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].value > this.median) {
+        arr[i].icon = 'up';
+      } else if (arr[i].value < this.median) {
+        arr[i].icon = 'down';
       } else {
-        if (arr[i].value > arr[i - 1].value) {
-          arr[i].icon = 'up';
-        } else {
-          if (arr[i].value < arr[i - 1].value) {
-            arr[i].icon = 'down';
-          } else {
-            arr[i].icon = 'same';
-          }
-        }
+        arr[i].icon = 'same';
       }
     }
     return arr;
