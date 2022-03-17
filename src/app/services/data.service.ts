@@ -78,24 +78,24 @@ export class DataService {
     return tempArray;
   }
 
-  calculateMedian(arr: WaterData[]): number {
+  calculateMean(arr: WaterData[]): number {
     let result = 0;
-    let median = 0;
+    let mean = 0;
     for (let i = 0; i < arr.length; i++) {
       const elem = arr[i];
       result += elem.value;
     }
-    median = result / arr.length;
-    return parseFloat(median.toFixed(1))
+    mean = result / arr.length;
+    return parseFloat(mean.toFixed(1))
   }
-  public median: number = 0;
+  public mean: number = 0;
 
   addIcon(arr: WaterData[]): WaterData[] {
-    this.median = this.calculateMedian(arr);
+    this.mean = this.calculateMean(arr);
     for (let i = 0; i < arr.length; i++) {
-      if (arr[i].value > this.median) {
+      if (arr[i].value > this.mean) {
         arr[i].icon = 'up';
-      } else if (arr[i].value < this.median) {
+      } else if (arr[i].value < this.mean) {
         arr[i].icon = 'down';
       } else {
         arr[i].icon = 'same';
